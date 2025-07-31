@@ -1,21 +1,4 @@
-import requests
-import os
-from dotenv import load_dotenv
-
-load_dotenv()
-API_KEY = os.getenv('API_KEY')
-
-
-def get_info_from_api(name):
-    """
-    Get the information from the animals API as JSON
-    """
-    API_URL = 'https://api.api-ninjas.com/v1/animals?name={}'.format(name)
-    response = requests.get(API_URL, headers={'X-Api-Key': API_KEY})
-    if response.status_code == requests.codes.ok:
-        return response.json()
-    else:
-        return "Error:", response.status_code, response.json()
+import data_fetcher as df
 
 
 def load_html(file_path):
@@ -93,18 +76,19 @@ def main():
     """
     Read the content with the api and read the html template
     Get user input which animal they want to see
-    Create a new html file
+    Create a new html file with output data
     """
 
     html_content = load_html("animals_template.html")
 
     name = input("Enter a name of an animal:")
-    animals_data = get_info_from_api(name)
+    animals_data = df.get_info_from_api(name)
 
     replace_info = handle_output(html_content,animals_data, name)
 
     save_html("animals.html", replace_info)
     print("Website was successfully generated to the file animals.html.")
+
 
 if __name__ == '__main__':
     main()
