@@ -69,11 +69,21 @@ def collect_animal_data(data: dict) -> str:
 
 def main():
     """
-
+    Read the content with the api and read the html template
+    Get user input which animal they want to see
+    Gather all data
+    Gather data about the animals
+    Create a new html file
     """
 
-    name = 'fox'
-    animals_data = get_info_from_api(name)
+    while True:
+        name = input("Enter a name of an animal:")
+        animals_data = get_info_from_api(name)
+        if animals_data:
+            break
+        else:
+            print("Couldn't find any data, please try another input.")
+
     html_content = load_html("animals_template.html")
 
     output = ""
@@ -82,6 +92,7 @@ def main():
 
     replace_info = html_content.replace("__REPLACE_ANIMALS_INFO__", output)
     save_html("animals.html", replace_info)
+    print("Website was successfully generated to the file animals.html.")
 
 if __name__ == '__main__':
     main()
