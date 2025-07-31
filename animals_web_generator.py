@@ -1,5 +1,4 @@
 import requests
-import json
 import os
 from dotenv import load_dotenv
 
@@ -67,30 +66,43 @@ def collect_animal_data(data: dict) -> str:
     return output
 
 
+def handle_output(html_content, animals_data, name):
+    """
+    Handle the output whether data was found or not.
+    Return the info to save in the html.
+    """
+
+    if not animals_data:
+        output = ('<div class="animal__not__found">'
+                  + f' The animal {name} was not found. '
+                    f'Try another! </div>\n')
+        replace_info = html_content.replace("__REPLACE_ANIMALS_INFO__",
+                                            output)
+
+    else:
+        output = ""
+        for data in animals_data:
+            output += collect_animal_data(data)
+        replace_info = html_content.replace("__REPLACE_ANIMALS_INFO__",
+                                            output)
+
+    return replace_info
+
+
 def main():
     """
     Read the content with the api and read the html template
     Get user input which animal they want to see
-    Gather all data
-    Gather data about the animals
     Create a new html file
     """
 
-    while True:
-        name = input("Enter a name of an animal:")
-        animals_data = get_info_from_api(name)
-        if animals_data:
-            break
-        else:
-            print("Couldn't find any data, please try another input.")
-
     html_content = load_html("animals_template.html")
 
-    output = ""
-    for data in animals_data:
-        output += collect_animal_data(data)
+    name = input("Enter a name of an animal:")
+    animals_data = get_info_from_api(name)
 
-    replace_info = html_content.replace("__REPLACE_ANIMALS_INFO__", output)
+    replace_info = handle_output(html_content,animals_data, name)
+
     save_html("animals.html", replace_info)
     print("Website was successfully generated to the file animals.html.")
 
